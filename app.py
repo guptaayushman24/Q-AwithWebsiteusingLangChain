@@ -10,15 +10,19 @@ from langchain_openai import ChatOpenAI
 from langchain.chains import RetrievalQA
 from fastapi import FastAPI
 from langserve import add_routes
+from pydantic import BaseModel
+
+class QueryRequest (BaseModel) :
+    query: str
+
 os.environ['OPEN_API_KEY']=os.getenv("OPENAI_API_KEY")
 ## LangSmith Tracking
 os.environ['LANGCHAIN_API_KEY']=os.getenv("LANGCHAIN_API_KEY")
 os.environ['LANGCHAIN_TRACKING_V2']="true"
-
 os.environ['LANGCHAIN_PROJECT']=os.getenv("LANGCHAIN_PROJECT")
 
 try :
-
+    
     loader = WebBaseLoader('https://en.wikipedia.org/wiki/OpenAI')
     docs = loader.load()
     # Splitting Data
@@ -37,7 +41,6 @@ try :
     vectorstoredb = FAISS.from_documents(langchain_document,embeddings)
     llm = ChatOpenAI(model="gpt-4o") # Calling the specific model
 
-    retriver = vectorstoredb.as_retriever(search_kwargs={"k":3})
     retriever = vectorstoredb.as_retriever(search_kwargs={"k": 3})
     # Build Chain
     qa_chain = RetrievalQA.from_chain_type(
@@ -56,6 +59,13 @@ try :
         qa_chain,
         path='/chain'
     )
+
+    @app.post("/ask")
+    def ask_question(request: QueryRequest):
+        user_query = request.query
+        # Call your QA chain
+        result = qa_chain.run(user_query)
+        return {"output": result}
 
     if __name__=="__main__" :
         import uvicorn
