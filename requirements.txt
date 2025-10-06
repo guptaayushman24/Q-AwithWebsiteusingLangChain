@@ -1,0 +1,24 @@
+langchain
+ipykernel
+python-dotenv
+langchain-community
+# pypdf
+# beautifulsoup4
+# arxiv
+# wikipedia
+# langchain-text-splitters
+langchain-openai
+# chromadb
+# sentence-transformers
+# langchain_huggingface
+# tf-keras
+faiss-cpu
+# langchain-chroma>=0.1.2
+beautifulsoup4
+langchain_groq
+langchain_core
+fastapi
+uvicorn
+langserve
+sse_starlette
+pydantic
